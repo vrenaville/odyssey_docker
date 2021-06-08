@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+ 
+  postgres:
+    image: "postgres:12"
+    ports:
+      - 15777:5432
+    environment:
+     -  POSTGRES_PASSWORD=password
+    networks:
+      - odyssey
+
+  odyssey:
+    build:
+      context: .
+      args:
+        tag: camptocamp/odyssey
+    image: camptocamp/odyssey
+    ports:
+      - 16777:6432
+    #environment:
+    #  - CMAKE_INSTALL_PREFIX="/usr/local/bin"
+    # - CUSTOM_ODYSSEY_CONF="/etc/odyssey/odyssey.conf"
+    # On production, hide conf volume and use env to replace conf
+    depends_on:
+      - postgres
+    networks:
+      - odyssey
+    volumes:
+      - ./conf/:/etc/odyssey  # Disable in prod
+      - ./log:/var/log        #
+
+networks:
+  odyssey:
